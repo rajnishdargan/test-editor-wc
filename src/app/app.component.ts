@@ -13,16 +13,20 @@ export class AppComponent implements AfterViewInit, OnInit {
   private toolbarItems = ['undo', 'redo', 'bold', 'italic', 'blockQuote', 'heading', 'link', 'numberedList', 'bulletedList', 'fontFamily',
     'fontSize', 'fontColor', 'fontBackgroundColor', 'underline', 'subscript', 'superscript', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells'];
   public editorInstance: any;
+  public ckEditorLib: any;
 
   ngOnInit(): void {
+    this.ckEditorLib = {
+      classicEditor: ClassicEditor
+    }
   }
 
   ngAfterViewInit() {
-    window['ckeditor'] = ClassicEditor;
     this.loadCKEditor();
     const editorConfig = questionSetEditorConfig;
     const questionsetEditorElement = document.createElement('lib-questionset-editor');
     questionsetEditorElement.setAttribute('editor-config', JSON.stringify(editorConfig));
+    (questionsetEditorElement as any).ckEditorLib = this.ckEditorLib;
     questionsetEditorElement.addEventListener('editorEmitter', (event) => {
       console.log("On editorEvent", event);
     });
@@ -31,8 +35,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   loadCKEditor() {
-    console.log('Hello ................')
-    window['ckeditor'].create(this.editorRef.nativeElement, {
+    this.ckEditorLib.classicEditor.create(this.editorRef.nativeElement, {
       toolbar: this.toolbarItems
     })
       .then(editor => {
